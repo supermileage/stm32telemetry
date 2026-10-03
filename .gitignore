@@ -1,0 +1,24 @@
+# Build outputs / directories
+Debug/
+Release/
+build/
+
+# Compiled object and dependency files
+*.o
+*.d
+*.su
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+
+# IDE specific files (Eclipse / STM32CubeIDE)
+.settings/
+*.launch
+*.ioc.bak
+
+# Operating System generated files
+.DS_Store
+Thumbs.db
+*.log
