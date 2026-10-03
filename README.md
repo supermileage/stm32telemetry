@@ -1,1 +1,7 @@
 # stm32telemetry
+
+## Design decisions
+
+- FreeRTOS is being used to ensure data isn't dropped. Different data sources operate at different frequencies so being able to switch to logging that data from another task will ensure it isn't dropped.
+    - FreeRTOS was selected specifically due to familiarity and meets requirements
+- Heap_1 was selected for the RTOS as dynamic memory allocation does need seem necessary at the moment
