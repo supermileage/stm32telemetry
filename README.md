@@ -1,4 +1,4 @@
-# Telemetry (STM32)
+# UBC Supermileage Telemetry
 
 ## Overview
 Used to gather information/sensor data from the vehicle, store it and potential transmit it. This data can then be processed.\
@@ -34,7 +34,7 @@ Semantic versioning will be used: `vMAJOR.MINOR.PATCH`
 - Patch will be incremented for bug fixes and minor backward compatible changes
 
 When a new feature like a sensor has been impemented and works well a release should be made. Other signficant achievements should also be released, use judgment. Detail changes (features added or removed, things broken/not backward compatible) in description so it can act as a changelog. \
-Any release should begin as a pre-release, if it has been tested on the car and works well it should become a release, a note on what is functioning would also be good. \
+Any release should begin as a pre-release, if it has been tested on the car and works well it should become a release, a note on what is functioning would also be good.
 
 To see how to make a release please view [release tutorial](release.md)
 
