@@ -11,7 +11,7 @@ View on notion
 ## Quick start (flash a release)
 1. Download release (.bin)
 2. Connect to the board to your computer via microUSB (STLK CN8 connector)
-3. Drag the .bin file into the folder for the board that should've opened when connecting to it
+3. The board will show up as a USB drive, drag the .bin into it. ST-LINK LED should flash, if `FAIL.TXT` is created then it failed
 
 ## Project structure
 ```
@@ -36,6 +36,7 @@ Semantic versioning will be used: `vMAJOR.MINOR.PATCH`
 When a new feature like a sensor has been impemented and works well a release should be made. Other signficant achievements should also be released, use judgment. Detail changes (features added or removed, things broken/not backward compatible) in description so it can act as a changelog. \
 Any release should begin as a pre-release, if it has been tested on the car and works well it should become a release, a note on what is functioning would also be good. \
 
+To see how to make a release please view [release tutorial](release.md)
 
 When releasing code make sure to compile for a release and not debug so it's more optimized. Find the .elf under projectname/Release
 
@@ -43,6 +44,6 @@ Suggestion: when we begin logging put the version and git hash to track where bu
 
 # Progress and next steps
 Makes it easy to see where we are and pickup the next task
-- [] MVP
-	- [] Communicate with IMU on the board
-	- [] MicroSD
+- [ ] MVP
+	- [ ] Communicate with IMU on the board
+	- [ ] MicroSD

@@ -11,7 +11,7 @@ build/
 *.bin
 *.hex
 *.map
-*.lst
+*.list
 
 # IDE specific files (Eclipse / STM32CubeIDE)
 .settings/
@@ -22,3 +22,7 @@ build/
 .DS_Store
 Thumbs.db
 *.log
+desktop.ini
+
+# version.h for any project
+**/Core/Inc/version.h

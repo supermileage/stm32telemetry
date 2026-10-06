@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#include "version.h"
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
