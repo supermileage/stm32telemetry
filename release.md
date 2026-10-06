@@ -39,17 +39,17 @@ Note: make sure `version.h` is gitignored, should already be from the top level 
 	- Attach Release/x.elf and Release/x.bin
 	- Set as pre-release unless it's been tested on the car. Can promote to release later and add in notes how it went on the car, if it's especially stable add "good" in the title
 	- Publish
-	```
-	## What's new
-	- Fuel-cell controller logging over USART (500XP)
-	
-	## Breaking changes
-	- CSV column `fc_v` renamed to `fc_voltage_v`; update analysis scripts
-	- (or "None")
-	
-	## Needs
-	- FC UART on PA2/PA3; see docs/hardware.md
-	
-	## Testing
-	- Bench: 30 min, all sources logging, no dropped frames
-	```
+```
+## What's new
+- Fuel-cell controller logging over USART (500XP)
+
+## Breaking changes
+- CSV column `fc_v` renamed to `fc_voltage_v`; update analysis scripts
+- (or "None")
+
+## Needs
+- FC UART on PA2/PA3; see docs/hardware.md
+
+## Testing
+- Bench: 30 min, all sources logging, no dropped frames
+```
