@@ -15,15 +15,15 @@ View on notion
 
 ## Project structure
 ```
-/firmware	      the main telemetry code
-    /Core/Src/main.c
+/firmware			the main telemetry code
+	/Core/Src/main.c
     
 /SubProjects 	 	other CubeIDE projects used to support development
 
-/lib/						shared drivers used by firmware and SubProjects
-		/README.MD	how to properly include this folder
+/lib/				shared drivers used by firmware and SubProjects
+	/README.MD		how to properly include this folder
 		
-/docs						documentation
+/docs				documentation
 ```
 Each folder has its own README.md if it requires more info
 
@@ -37,10 +37,6 @@ When a new feature like a sensor has been impemented and works well a release sh
 Any release should begin as a pre-release, if it has been tested on the car and works well it should become a release, a note on what is functioning would also be good. \
 
 To see how to make a release please view [release tutorial](release.md)
-
-When releasing code make sure to compile for a release and not debug so it's more optimized. Find the .elf under projectname/Release
-
-Suggestion: when we begin logging put the version and git hash to track where bugs came from
 
 # Progress and next steps
 Makes it easy to see where we are and pickup the next task
