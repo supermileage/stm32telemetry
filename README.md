@@ -1,38 +1,48 @@
 # Telemetry (STM32)
 
 ## Overview
-Used to gather information/sensor data from the vehicle, store it and potential transmit it. This data can then be processed.
-More info: https://app.notion.com/p/Vehicle-Telemetry-System-3ee7e02c955f806296e9d68eaa08e37a
+Used to gather information/sensor data from the vehicle, store it and potential transmit it. This data can then be processed.\
+More info: https://app.notion.com/p/Vehicle-Telemetry-System-3ee7e02c955f806296e9d68eaa08e37a \
 Info about all projects: https://app.notion.com/p/Software-Embedded-Division-Project-Plan-2026-2027-3bb7e02c955f80a282bec8cfb8830d0f
 
 ## Timeline
 View on notion
 
-## Design decisions
-
-- FreeRTOS is being used to ensure data isn't dropped. Different data sources operate at different frequencies so being able to switch to logging that data from another task will ensure it isn't dropped.
-    - FreeRTOS was selected specifically due to familiarity and meets requirements
-- Heap_1 was selected for the RTOS as dynamic memory allocation does need seem necessary at the moment
+## Quick start (flash a release)
+1. Download release (.bin)
+2. Connect to the board to your computer via microUSB (STLK CN8 connector)
+3. Drag the .bin file into the folder for the board that should've opened when connecting to it
 
 ## Project structure
 ```
-/firmware/      the main telemetry code
+/firmware	      the main telemetry code
     /Core/Src/main.c
-/SubProjects/   other CubeIDE projects used to support development
-/docs
+    
+/SubProjects 	 	other CubeIDE projects used to support development
+
+/lib/						shared drivers used by firmware and SubProjects
+		/README.MD	how to properly include this folder
+		
+/docs						documentation
 ```
+Each folder has its own README.md if it requires more info
 
 ## Versioning and updates
 Semantic versioning will be used: `vMAJOR.MINOR.PATCH`
 - Major will be incremented when a milestone is hit such as MVP
-- Minor will be incremented for new new features/capabilities
-- Patch will be incremented for bug fixes
+- Minor will be incremented for new new features/capabilities or breaking change
+- Patch will be incremented for bug fixes and minor backward compatible changes
 
-When a new feature like a sensor has been impemented and works well a release should be made. Other signficant achievements should also be released, use judgment.\
-Any code that hasn't been tested on the car should be released as pre-release.\
-When releasing code make sure to compile for a release and not debug so it's more optimized. Find the .elf under projectname/Release \
-When a release has been tested and is known to be good please state that in the tag for future reference in case we need roll back in a hurry.
+When a new feature like a sensor has been impemented and works well a release should be made. Other signficant achievements should also be released, use judgment. Detail changes (features added or removed, things broken/not backward compatible) in description so it can act as a changelog. \
+Any release should begin as a pre-release, if it has been tested on the car and works well it should become a release, a note on what is functioning would also be good. \
+
+
+When releasing code make sure to compile for a release and not debug so it's more optimized. Find the .elf under projectname/Release
 
 Suggestion: when we begin logging put the version and git hash to track where bugs came from
 
-Update the `CHANGELOG.MD` when adding 
+# Progress and next steps
+Makes it easy to see where we are and pickup the next task
+- [] MVP
+	- [] Communicate with IMU on the board
+	- [] MicroSD
