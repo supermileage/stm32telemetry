@@ -17,3 +17,6 @@
 	- Consider circular burst mode (rounding)
 	- vTaskDelete cannot be used with heap_1 as it cannot free the task from the heap and will just stall
 	- The IMU has designator U21 on the board
+	- To account for gravity for the accelerometer a calibration step is needed as it depends on how the IMU is titled when the car is on flat ground. We take those values and subtract them for all future readings.
+	- Accelerometer is at most +-65mg, typical 10
+	- Gyroscope is at most +- 3000 mdps, typical 1000

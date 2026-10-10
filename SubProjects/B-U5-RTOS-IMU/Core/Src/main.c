@@ -36,6 +36,9 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define IMU_ADDRESS 0b11010110
+
+#define MG_PER_LSB 0.122
+#define MDPS_PER_LSB 17.50
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -88,10 +91,10 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 void startup(void *parameters){
 	//print project version
 	uint8_t version[] = FW_VERSION "\n";
-	HAL_UART_Transmit(&huart1, version, sizeof(version), 200);
+	HAL_UART_Transmit(&huart1, version, sizeof(version) - 1, 200);
 	//print project name
 	uint8_t project_name[] = "B-U5-RTOS-IMU\n";
-	HAL_UART_Transmit(&huart1, project_name, sizeof(project_name), 200);
+	HAL_UART_Transmit(&huart1, project_name, sizeof(project_name) - 1, 200);
 
 	vTaskDelete(NULL); //delete self
 }
@@ -110,14 +113,30 @@ void readIMU(void *parameters){
 	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x11, I2C_MEMADD_SIZE_8BIT, &ODR_G, 1, 200);
 
 	while(1){
-		//read IMU, &hi2c2
-		uint8_t gyroscope_reading[2];
-		HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, 0x22, I2C_MEMADD_SIZE_8BIT, gyroscope_reading, 2, 200);
-		int16_t gyroscope_combined = (int16_t)gyroscope_reading[1] << 8 | gyroscope_reading[0];
-		char buffer[16];
+		//read IMU 0x22-0x2D
+		uint8_t readings[12];
+		HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, 0x22, I2C_MEMADD_SIZE_8BIT, readings, 12, 200);
+
+		//parse data
+		int16_t gyroscope[3];
+		gyroscope[0] = (int16_t)((readings[1] << 8) | readings[0]) * MDPS_PER_LSB;
+		gyroscope[1] = (int16_t)((readings[3] << 8) | readings[2]) * MDPS_PER_LSB;
+		gyroscope[2] = (int16_t)((readings[5] << 8) | readings[4]) * MDPS_PER_LSB;
+		char buffer[64];
 		// Format the signed 16-bit integer into a string
-		int len = snprintf(buffer, sizeof(buffer), "%d\r\n", gyroscope_combined);
+		int len = snprintf(buffer, sizeof(buffer), "gyroscope   (mdps): x:%+04d, y:%+04d, z:%+04d\r\n", gyroscope[0], gyroscope[1], gyroscope[2]);
+		if (len >= (int)sizeof(buffer)) len = sizeof(buffer) - 1;
 		HAL_UART_Transmit(&huart1, (uint8_t*)buffer, len, 200);
+
+		int16_t accelerometer[3];
+		accelerometer[0] = (int16_t)((readings[7] << 8) | readings[6]) * MG_PER_LSB;
+		accelerometer[1] = (int16_t)((readings[9] << 8) | readings[8]) * MG_PER_LSB;
+		accelerometer[2] = (int16_t)((readings[11] << 8) | readings[10]) * MG_PER_LSB;
+
+		len = snprintf(buffer, sizeof(buffer), "accelerometer (mg): x:%+04d, y:%+04d, z:%+04d\r\n", accelerometer[0], accelerometer[1], accelerometer[2]);
+		if (len >= (int)sizeof(buffer)) len = sizeof(buffer) - 1;
+		HAL_UART_Transmit(&huart1, (uint8_t*)buffer, len, 200);
+
 		//print to UART
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
