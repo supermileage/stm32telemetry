@@ -22,7 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "version.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -83,6 +85,29 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void startup(void *parameters){
+	//print project version
+	uint8_t version[] = FW_VERSION "\n";
+	HAL_UART_Transmit(&huart4, version, sizeof(version), 200);
+	//print project name
+	uint8_t project_name[] = "B-U5-RTOS-IMU\n";
+	HAL_UART_Transmit(&huart4, project_name, sizeof(project_name), 200);
+
+	vTaskDelete(NULL); //delete self
+}
+
+void readIMU(void *parameters){
+	//init
+	vTaskDelay(35 / portTICK_PERIOD_MS); //turn on time
+	//maybe send reset signal at CTRL3_C
+	uint8_t ODR = 0b10000000; //1.66 kHz sampling rate, default FS, default LPF2, last bit must be 0
+	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x10, I2C_MEMADD_SIZE_8BIT, &ODR, 1, 200);
+	while(1){
+		//read IMU, &hi2c2
+		//print to UART
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -130,7 +155,8 @@ int main(void)
   MX_UCPD1_Init();
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  xTaskCreate(startup, "Startup print", 256, NULL, 2, NULL); //higher priority so don't need to coordinate uart
+  xTaskCreate(readIMU, "Read + print IMU", 256, NULL, 1, NULL);
   /* USER CODE END 2 */
 
   /* Init scheduler */

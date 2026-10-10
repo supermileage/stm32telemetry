@@ -11,7 +11,11 @@
 4. In CubeIDE: Project > Properties > C/C++ Build > Settings > MCU/MPU GCC Compiler > Debugging (config release) set Debug level to -g3. Apply, rebuild index if it prompts you to
 5. In CubeIDE: Project > Properties > C/C++ Build > Settings > MCU/MPU Post build outputs (in release config) tick Convert to binary file (-O binary). Apply.
 	- Creates binary file to make flashing need no software to allow any member needs to flash and easier for us if need to roll back
-6. (Optional) auto rename build files with name and version number so you don't have to do it manually each time. Project > Properties > C/C++ Build > Settings > Build Steps (Configuration: Release) in the Post-build steps > Command: `arm-none-eabi-objcopy ${ProjName}.elf NAME-$(FW_VERSION).elf && arm-none-eabi-objcopy -O binary ${ProjName}.elf NAME-$(FW_VERSION).bin`. Replace "NAME" right before FW_VERSION to the name you want or use `${ProjName}` for the project name. Add a description if you wish
+6. (Optional) auto rename build files with name and version number so you don't have to do it manually each time. Project > Properties > C/C++ Build > Settings > Build Steps (Configuration: Release) in the Post-build steps > Command: 
+	```
+	arm-none-eabi-objcopy ${ProjName}.elf NAME-$(FW_VERSION).elf && arm-none-eabi-objcopy -O binary ${ProjName}.elf NAME-$(FW_VERSION).bin
+	```
+	Replace "NAME" right before FW_VERSION to the name you want or use `${ProjName}` for the project name. Add a description if you wish
 7. Click arrow next to hammer and select release check that `Core/Inc/version.h` exists (build in Debug for all other cases than release)
 
 Note: this is already good by default just don't change it. Project Properties > C/C++ Build > Builder Settings "Generate Makefiles automatically"
