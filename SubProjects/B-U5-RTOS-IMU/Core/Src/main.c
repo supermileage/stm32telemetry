@@ -18,13 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os2.h"
+#include "app_freertos.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "version.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,7 +67,6 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void SystemPower_Config(void);
-void MX_FREERTOS_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_ADF1_Init(void);
 static void MX_I2C1_Init(void);
@@ -88,24 +88,38 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 void startup(void *parameters){
 	//print project version
 	uint8_t version[] = FW_VERSION "\n";
-	HAL_UART_Transmit(&huart4, version, sizeof(version), 200);
+	HAL_UART_Transmit(&huart1, version, sizeof(version), 200);
 	//print project name
 	uint8_t project_name[] = "B-U5-RTOS-IMU\n";
-	HAL_UART_Transmit(&huart4, project_name, sizeof(project_name), 200);
+	HAL_UART_Transmit(&huart1, project_name, sizeof(project_name), 200);
 
 	vTaskDelete(NULL); //delete self
 }
 
 void readIMU(void *parameters){
 	//init
-	vTaskDelay(35 / portTICK_PERIOD_MS); //turn on time
+	vTaskDelay(pdMS_TO_TICKS(35)); //turn on time
 	//maybe send reset signal at CTRL3_C
-	uint8_t ODR = 0b10000000; //1.66 kHz sampling rate, default FS, default LPF2, last bit must be 0
-	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x10, I2C_MEMADD_SIZE_8BIT, &ODR, 1, 200);
+	uint8_t DEVICE_CONF = 0b11100010; //set DEVICE_CONF as it's recommended, rest default
+	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x18, I2C_MEMADD_SIZE_8BIT, &DEVICE_CONF, 1, 200);
+	uint8_t BDU = 0b01000100; //set BDU = 1, rest default. So high and low bytes don't tear/stay in sync
+	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x12, I2C_MEMADD_SIZE_8BIT, &BDU, 1, 200);
+	uint8_t ODR_XL = 0b10001000; //1.66 kHz sampling rate, 4g FS, default LPF2, last bit must be 0
+	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x10, I2C_MEMADD_SIZE_8BIT, &ODR_XL, 1, 200);
+	uint8_t ODR_G = 0b10000100; //1.66 kHz sampling rate, FS: max 500 degrees per second
+	HAL_I2C_Mem_Write(&hi2c2, IMU_ADDRESS, 0x11, I2C_MEMADD_SIZE_8BIT, &ODR_G, 1, 200);
+
 	while(1){
 		//read IMU, &hi2c2
+		uint8_t gyroscope_reading[2];
+		HAL_I2C_Mem_Read(&hi2c2, IMU_ADDRESS, 0x22, I2C_MEMADD_SIZE_8BIT, gyroscope_reading, 2, 200);
+		int16_t gyroscope_combined = (int16_t)gyroscope_reading[1] << 8 | gyroscope_reading[0];
+		char buffer[16];
+		// Format the signed 16-bit integer into a string
+		int len = snprintf(buffer, sizeof(buffer), "%d\r\n", gyroscope_combined);
+		HAL_UART_Transmit(&huart1, (uint8_t*)buffer, len, 200);
 		//print to UART
-		vTaskDelay(500 / portTICK_PERIOD_MS);
+		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 }
 
@@ -156,7 +170,7 @@ int main(void)
   MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
   xTaskCreate(startup, "Startup print", 256, NULL, 2, NULL); //higher priority so don't need to coordinate uart
-  xTaskCreate(readIMU, "Read + print IMU", 256, NULL, 1, NULL);
+  xTaskCreate(readIMU, "Read + print IMU", 512, NULL, 1, NULL);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -938,6 +952,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param None
   * @retval None
   */
 void Error_Handler(void)

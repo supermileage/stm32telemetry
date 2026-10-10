@@ -9,3 +9,11 @@
 	- ODR = output data rate
 	- ODR_XL[3:0] in CTRL1_XL controls sampling rate or off of accelerometer. View table 43 in datasheet for bit to sampling rate selections. To use high performance bit XL_HM_MODE bit in CTRL6_C should be cleared, default 0.
 	- ODR_G[3:0] in CTRL2_G controls sampling rate or off of gyroscope. View table 46 in datasheet for bit to sampling rate selections. To use high performance bit G_HM_MODE bit in CTRL7_G should be cleared, default 0.
+	- FS = full scale = maximum measurement it can measure
+		- The amount of steps is always the same but the resolution is what changes. Using 2g gives us a resolution 0.061mg per step, using 16g 0.488mg.
+		- DPS = degreees per second
+	- DEVICE_CONF bit in CTRL9_XL is recommended to set, it starts at 0
+	- I believe BDU can help us make sure low and high byte of reading stay in sync. It freezes high and low byte while reading so one doesn't change while reading and we get a mismatch.
+	- Consider circular burst mode (rounding)
+	- vTaskDelete cannot be used with heap_1 as it cannot free the task from the heap and will just stall
+	- The IMU has designator U21 on the board
